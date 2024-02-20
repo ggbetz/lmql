@@ -23,10 +23,14 @@ def rename_model_args(model_args):
     elif dtype == '8bit':
         model_args["load_in_8bit"] = True
 
-    if type(q_config) is set:
-        from transformers import BitsAndBytesConfig
-        q_config = {k: v for k, v in q_config.pop()}
-        model_args["quantization_config"] = BitsAndBytesConfig(**q_config)
+    if type(q_config) is frozenset:
+        if dict(q_config).get("quant_method") == "awq":
+            from transformers import AwqConfig
+            model_args["quantization_config"] = AwqConfig(**dict(quantization_config))
+        else:
+            from transformers import BitsAndBytesConfig
+            q_config = {k: v for k, v in q_config.pop()}
+            model_args["quantization_config"] = BitsAndBytesConfig(**q_config)
     elif q_config is not None:
         warnings.warn(
             "quantization_config is not a frozenset, so it will not be used. Use frozenset(Create BitsAndBytesConfig.__dict__.items()) instead.")

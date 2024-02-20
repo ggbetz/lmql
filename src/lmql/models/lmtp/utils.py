@@ -26,7 +26,7 @@ def rename_model_args(model_args):
     if type(q_config) is frozenset:
         if dict(q_config).get("quant_method") == "awq":
             from transformers import AwqConfig
-            model_args["quantization_config"] = AwqConfig(**dict(quantization_config))
+            model_args["quantization_config"] = AwqConfig(**dict(q_config))
         else:
             from transformers import BitsAndBytesConfig
             q_config = {k: v for k, v in q_config.pop()}
